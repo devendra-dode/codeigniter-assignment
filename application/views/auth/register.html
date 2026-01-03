@@ -1,0 +1,155 @@
+<?php $this->load->view('layouts/auth_header.html'); ?>
+
+<div class="row justify-content-center">
+  <div class="col-md-6 auth-card">
+
+    <h4 class="text-center mb-4">User Registration</h4>
+
+    <form id="registerForm" novalidate>
+
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" name="first_name" class="form-control">
+        <div class="invalid-feedback"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" name="last_name" class="form-control">
+        <div class="invalid-feedback"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" class="form-control">
+        <div class="invalid-feedback"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control">
+        <div class="invalid-feedback"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Register As</label>
+        <select name="role" class="form-control">
+          <option value="">Select Role</option>
+          <option value="employee">Employee</option>
+          <option value="dealer">Dealer</option>
+        </select>
+        <div class="invalid-feedback"></div>
+      </div>
+
+      <button type="submit" class="btn btn-dark btn-block">
+        Register
+      </button>
+
+      <p class="text-center mt-3">
+        Already have an account?
+        <a href="<?= base_url('login') ?>">Login</a>
+      </p>
+
+    </form>
+
+  </div>
+</div>
+
+<script>
+$("#registerForm").validate({
+    rules: {
+        first_name: {
+            required: true,
+            minlength: 2
+        },
+        last_name: {
+            required: true,
+            minlength: 2
+        },
+        email: {
+            required: true,
+            email: true,
+            remote: {
+                url: "<?= base_url('auth/check_email') ?>",
+                type: "post",
+                data: {
+                    email: function () {
+                        return $("input[name='email']").val();
+                    }
+                }
+            }
+        },
+        password: {
+            required: true,
+            minlength: 6
+        },
+        role: {
+            required: true
+        }
+    },
+
+    messages: {
+        first_name: {
+            required: "First name is required"
+        },
+        last_name: {
+            required: "Last name is required"
+        },
+        email: {
+            required: "Email is required",
+            email: "Enter a valid email",
+            remote: "This email is already registered with us"
+        },
+        password: {
+            required: "Password is required",
+            minlength: "Minimum 6 characters required"
+        },
+        role: {
+            required: "Please select role"
+        }
+    },
+
+    errorElement: "div",
+    errorClass: "invalid-feedback",
+
+    highlight: function (element) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element) {
+        $(element).removeClass("is-invalid");
+    },
+
+    submitHandler: function (form) {
+        $.ajax({
+            url: "<?= base_url('register') ?>",
+            type: "POST",
+            data: $(form).serialize(),
+            dataType: "json",
+            success: function (res) {
+                if (res.status === false) {
+                    $.each(res.errors, function (key, value) {
+                        $('[name="'+key+'"]')
+                            .addClass('is-invalid')
+                            .after('<div class="invalid-feedback">'+value+'</div>');
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'success',                  // icon type: success, error, warning, info
+                        title: 'Success',                  // modal title
+                        text: res.msg || 'Saved successfully!',  // message text
+                        showConfirmButton: false,          // hide OK button
+                        timer: 2000                        // auto-close after 2 sec
+                    }).then(() => {
+                        // Redirect after modal closes
+                        window.location.href = "<?= base_url('login') ?>";
+                    });
+
+                }
+            }
+        });
+    }
+});
+</script>
+
+
+<?php $this->load->view('layouts/auth_footer.html'); ?>

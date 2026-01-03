@@ -1,0 +1,116 @@
+<?php $this->load->view('layouts/auth_header.html'); ?>
+
+<div class="row justify-content-center">
+  <div class="col-md-5 auth-card">
+
+    <h4 class="text-center mb-4">Login</h4>
+
+    <form id="loginForm" novalidate>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" class="form-control">
+        <div class="invalid-feedback"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control">
+        <div class="invalid-feedback"></div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">
+        Login
+      </button>
+
+      <p class="text-center mt-3">
+        Don’t have an account?
+        <a href="<?= base_url('register') ?>">Register</a>
+      </p>
+
+    </form>
+
+  </div>
+</div>
+
+<script>
+$("#loginForm").validate({
+    rules: {
+        email: {
+            required: true,
+            email: true
+        },
+        password: {
+            required: true,
+            minlength: 6
+        }
+    },
+
+    messages: {
+        email: {
+            required: "Email is required",
+            email: "Enter a valid email address"
+        },
+        password: {
+            required: "Password is required",
+            minlength: "Minimum 6 characters required"
+        }
+    },
+
+    errorElement: "div",
+    errorClass: "invalid-feedback",
+
+    highlight: function (element) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element) {
+        $(element).removeClass("is-invalid");
+    },
+
+    submitHandler: function (form) {
+        $.ajax({
+            url: "<?= base_url('login') ?>",
+            type: "POST",
+            data: $(form).serialize(),
+            dataType: "json",
+            success: function (res) {
+
+                if (res.status === false) {
+
+                    // Field-specific errors
+                    if (res.errors) {
+                        $.each(res.errors, function (key, value) {
+                            $('[name="'+key+'"]')
+                                .addClass('is-invalid')
+                                .after('<div class="invalid-feedback">'+value+'</div>');
+                        });
+                    } else {
+                        // General error (invalid credentials)
+                      Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: res.msg || 'Something went wrong!',
+                        });
+                    }
+
+                } else {
+                    Swal.fire({
+                        icon: 'success',                  // icon type: success, error, warning, info
+                        title: 'Success',                  // modal title
+                        text: res.msg || 'Saved successfully!',  // message text
+                        showConfirmButton: false,          // hide OK button
+                        timer: 2000                        // auto-close after 2 sec
+                    }).then(() => {
+                        // Redirect after modal closes
+                        window.location.href = res.redirect;
+                    });
+
+                    //window.location.href = res.redirect;
+                }
+            }
+        });
+    }
+});
+</script>
+
+<?php $this->load->view('layouts/auth_footer.html'); ?>

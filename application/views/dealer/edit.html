@@ -1,0 +1,186 @@
+<?php $this->load->view('layouts/admin_header.html'); ?>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+
+    <div class="card p-4">
+      <h4 class="text-center mb-4">
+        Edit Dealer Profile
+      </h4>
+
+      <form id="dealerProfileForm" novalidate>
+
+        <!-- User Fields -->
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" name="first_name" class="form-control" value="<?= $dealer->first_name ?? '' ?>">
+          <div class="invalid-feedback"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" name="last_name" class="form-control" value="<?= $dealer->last_name ?? '' ?>">
+          <div class="invalid-feedback"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" class="form-control" value="<?= $dealer->email ?? '' ?>">
+          <div class="invalid-feedback"></div>
+        </div>
+
+        <!-- Dealer Fields -->
+        <div class="form-group">
+          <label>State</label>
+          <select name="state_id" id="stateSelect" class="form-control">
+            <option value="">Select State</option>
+            <?php foreach($states as $s): ?>
+              <option value="<?= $s->id ?>" 
+                <?= (isset($dealer->state_id) && (string)$dealer->state_id === (string)$s->id) ? 'selected' : '' ?>>
+                <?= $s->name ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+          <div class="invalid-feedback"></div>
+        </div>
+
+        <div class="form-group">
+          <label>City</label>
+          <select name="city_id" id="citySelect" class="form-control">
+            <option value="">Select City</option>
+            <?php if(!empty($cities)): ?>
+              <?php foreach($cities as $c): ?>
+                <option value="<?= $c->id ?>" 
+                  <?= (isset($dealer->city_id) && (string)$dealer->city_id === (string)$c->id) ? 'selected' : '' ?>>
+                  <?= $c->name ?>
+                </option>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </select>
+          <div class="invalid-feedback"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Zip Code</label>
+          <input type="text" name="zip" class="form-control" value="<?= $dealer->zip ?? '' ?>">
+          <div class="invalid-feedback"></div>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block">
+          Save & Continue
+        </button>
+
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+$("#dealerProfileForm").validate({
+    rules: {
+        first_name: { required: true, minlength: 2 },
+        last_name:  { required: true, minlength: 2 },
+        email: {
+            required: true,
+            email: true,
+            remote: {
+                url: "<?= base_url('dealer/check_email_ajax') ?>",
+                type: "post",
+                data: {
+                    email: function() {
+                        return $("input[name='email']").val();
+                    },
+                    user_id: <?= $dealer->user_id ?> // Pass current user's id
+                }
+            }
+        },
+        state_id: { required: true },
+        city_id:  { required: true },
+        zip:      { required: true, digits: true, minlength: 5, maxlength: 6 }
+    },
+
+    messages: {
+        first_name: { required: "First name is required" },
+        last_name:  { required: "Last name is required" },
+        email: { 
+            required: "Email is required",
+            email: "Enter a valid email",
+            remote: "The email you entered is associated with another account"
+        },
+        state_id: { required: "Please select state" },
+        city_id:  { required: "Please select city" },
+        zip:      { required: "Zip code is required", digits: "Zip must be numeric", minlength: "Minimum 5 digits", maxlength: "Maximum 6 digits" }
+    },
+
+    errorElement: "div",
+    errorClass: "invalid-feedback",
+
+    highlight: function (element) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element) {
+        $(element).removeClass("is-invalid");
+    },
+
+    submitHandler: function (form) {
+        $.ajax({
+            url: "<?= base_url('dealer/profile/'.$dealer->user_id) ?>",
+            type: "POST",
+            data: $(form).serialize(),
+            dataType: "json",
+            success: function (res) {
+                if (res.status === false) {
+                    $.each(res.errors, function(key, value){
+                        $("[name='"+key+"']")
+                            .addClass("is-invalid")
+                            .next(".invalid-feedback")
+                            .html(value);
+                    });
+                } else {
+
+                    Swal.fire({
+                        icon: 'success',                  // icon type: success, error, warning, info
+                        title: 'Success',                  // modal title
+                        text: res.msg || 'Saved successfully!',  // message text
+                        showConfirmButton: false,          // hide OK button
+                        timer: 2000                        // auto-close after 2 sec
+                    }).then(() => {
+                        // Redirect after modal closes
+                        window.location.href = res.redirect;
+                    });
+
+                }
+            }
+        });
+    }
+});
+
+// On state change, load cities via AJAX
+$('#stateSelect').on('change', function(){
+    var state_id = $(this).val();
+    $('#citySelect').html('<option value="">Loading...</option>');
+
+    if(state_id){
+        $.ajax({
+            url: '<?= base_url("dealer/get_cities") ?>',
+            type: 'POST',
+            data: {state_id: state_id},
+            dataType: 'json',
+            success: function(res){
+                var html = '<option value="">Select City</option>';
+                $.each(res, function(i, city){
+                    html += '<option value="'+city.id+'">'+city.name+'</option>';
+                });
+                $('#citySelect').html(html);
+            }
+        });
+    } else {
+        $('#citySelect').html('<option value="">Select City</option>');
+    }
+});
+
+
+</script>
+
+<?php $this->load->view('layouts/admin_footer.html'); ?>

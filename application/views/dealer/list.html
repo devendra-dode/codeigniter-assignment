@@ -1,0 +1,52 @@
+<?php $this->load->view('layouts/admin_header.html'); ?>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<div class="card p-4">
+    <h4 class="mb-3">Dealer List</h4>
+
+    <table id="dealerTable" class="table table-bordered table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>City</th>
+            <th>State</th>
+            <th>ZIP</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+$(function () {
+
+    var table = $('#dealerTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "<?= base_url('dealer/datatable') ?>",
+            type: "POST",
+            data: function (d) {
+                d.zip = $('#zipFilter').val();
+            }
+        },
+        pageLength: 10,
+        order: [[0, "asc"]],
+        columnDefs: [
+            { orderable: false, targets: 5 }
+        ]
+    });
+
+    $('#filterBtn').on('click', function () {
+        table.ajax.reload();
+    });
+
+});
+</script>
+
+<?php $this->load->view('layouts/admin_footer.html'); ?>

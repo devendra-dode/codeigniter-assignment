@@ -1,0 +1,41 @@
+<?php $this->load->view('layouts/admin_header.html'); ?>
+
+<div class="row">
+
+  <div class="col-md-4">
+    <div class="card p-4 text-center">
+      <h5>Welcome</h5>
+      <h4><?= ucfirst($user->first_name) ?> <?= ucfirst($user->role) ?></h4>
+    </div>
+  </div>
+
+  <?php if($user->role == 'employee'): ?>
+  <div class="col-md-4">
+    <div class="card p-4 text-center">
+      <h5>Dealer Management</h5>
+      <a href="<?= base_url('dealer') ?>"
+         class="btn btn-primary btn-sm mt-2">
+         View Dealers
+      </a>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <?php if ($user->role == 'dealer'): ?>
+  <div class="col-md-4">
+    <div class="card p-4 text-center">
+      <h5>Update Profile</h5>
+
+      <a href="<?= base_url('dealer/edit/'.$user->id) ?>"
+         class="btn btn-primary btn-sm mt-2">
+         Edit Profile
+      </a>
+
+    </div>
+  </div>
+<?php endif; ?>
+
+
+</div>
+
+<?php $this->load->view('layouts/admin_footer.html'); ?>
