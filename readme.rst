@@ -61,6 +61,8 @@ Open your browser and visit::
 
 http://localhost/codeigniter-assignment/
 
+Video Link = https://drive.google.com/file/d/1YTQhKc20_OjW233tsJTEgx-ZNPen2IIN/view?usp=drive_link
+
 
 Features
 --------
