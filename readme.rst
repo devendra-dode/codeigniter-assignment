@@ -48,7 +48,7 @@ Step 5: Configure base URL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 Open ``application/config/config.php`` and update::
 
-    $config['base_url'] = 'http://localhost/ci-ass/'
+    $config['base_url'] = 'http://localhost/codeigniter-assignment/'
 
 Step 6: Start your local server
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,22 +59,8 @@ Step 7: Run the project in browser
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Open your browser and visit::
 
-    http://localhost/ci-ass/
+http://localhost/codeigniter-assignment/
 
-Git Setup (Optional)
--------------------
-Set Git global identity (if not done)::
-
-    git config --global user.name "Devendra Dode"
-    git config --global user.email "devendra1821@gmail.com"
-
-Initial commit and push to GitHub::
-
-    git add .
-    git commit -m "Initial commit"
-    git branch -M main
-    git remote add origin https://github.com/devendra-dode/codeigniter-assignment.git
-    git push -u origin main
 
 Features
 --------
