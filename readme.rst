@@ -3,7 +3,7 @@ CodeIgniter Assignment Project
 
 Project Overview
 ----------------
-Ye project CodeIgniter framework par bana hai. Isme ek SQL database file included hai jiska naam ``ci_assignment.sql`` hai. Is project ko aap locally run kar sakte ho after cloning and importing the database.
+Codeigniter Assignment
 
 Requirements
 ------------
